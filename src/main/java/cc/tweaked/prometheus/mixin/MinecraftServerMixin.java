@@ -1,7 +1,7 @@
 package cc.tweaked.prometheus.mixin;
 
 import cc.tweaked.prometheus.collectors.VanillaCollector;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -25,19 +25,19 @@ class MinecraftServerMixin implements VanillaCollector.MinecraftServerTimings {
     @Unique
     private long tickStart;
 
-    @Inject(at = @At("HEAD"), method = "startMetricsRecordingTick")
+    @Inject(at = @At("HEAD"), method = "startTickMetrics")
     private void beforeTick(CallbackInfo ci) {
-        tickStart = Util.getNanos();
+        tickStart = Util.getEpochTimeMs();
     }
 
     @Inject(
-        method = "waitUntilNextTick",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;managedBlock(Ljava/util/function/BooleanSupplier;)V")
+        method = "runTasksTillTickEnd",
+        at = @At("HEAD")
     )
     private void afterTick(CallbackInfo ci) {
         // We want to inject here rather than endMetricsRecordingTick, as that also counts the sleep until the next tick.
 
-        long time = Util.getNanos() - tickStart;
+        long time = Util.getEpochTimeMs() - tickStart;
         averageTickTime = averageTickTime * 0.8F + (float) time / 1000000.0F * 0.19999999F;
         if (observer != null) observer.onServerTick(time, averageTickTime);
     }

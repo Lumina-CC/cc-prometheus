@@ -42,13 +42,13 @@ public class VanillaCollector {
             .register(context.registry());
 
         context.onTick(() -> {
-            for (var level : server.getAllLevels()) {
-                var name = level.dimension().location().toString();
-                playerCount.labels(name).set(level.players().size());
-                chunksLoaded.labels(name).set(level.getChunkSource().getLoadedChunksCount());
+            for (var level : server.getWorlds()) {
+                var name = level.getDimensionEntry().toString();
+                playerCount.labels(name).set(level.getPlayers().size());
+                chunksLoaded.labels(name).set(level.getChunkManager().getLoadedChunkCount());
             }
 
-            totalPlayerCount.set(server.getPlayerCount());
+            totalPlayerCount.set(server.getCurrentPlayerCount());
         });
 
         ((MinecraftServerTimings) server).prometheus$setTimingObserver((time, averageTime) -> {

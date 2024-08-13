@@ -5,24 +5,20 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.WorldSavePath;
+import net.minecraft.world.level.storage.LevelStorage;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class FabricMod implements ModInitializer {
-    private static final LevelResource configDir;
+    private static final LevelStorage configDir;
     private static final String configName = "ccprometheus-server.toml";
 
     static {
-        try {
-            var constructor = LevelResource.class.getDeclaredConstructor(String.class);
-            constructor.setAccessible(true);
-            configDir = constructor.newInstance("serverconfig");
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
+        configDir = LevelStorage.create(Path.of("serverconfig"));
     }
 
     private static final CommentedConfigSpec configSpec = new CommentedConfigSpec();
@@ -48,7 +44,7 @@ public class FabricMod implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(this::onServerStarting);
 
         // Need to run after CC has started.
-        var phase = new ResourceLocation(Constants.MOD_ID, "after_cc");
+        var phase = Identifier.of(Constants.MOD_ID, "after_cc");
         ServerLifecycleEvents.SERVER_STARTED.addPhaseOrdering(Event.DEFAULT_PHASE, phase);
         ServerLifecycleEvents.SERVER_STARTED.register(phase, server -> ServerMetrics.onServerStart(server, config));
 
@@ -57,7 +53,7 @@ public class FabricMod implements ModInitializer {
     }
 
     private void onServerStarting(MinecraftServer server) {
-        var configPath = server.getWorldPath(configDir).resolve(configName);
+        var configPath = configDir.getSavesDirectory().resolve(configName);
         var configBuilder = CommentedFileConfig.builder(configPath)
             .onFileNotFound((path, format) -> {
                 Files.createDirectories(path.getParent());

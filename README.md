@@ -1,5 +1,5 @@
 # CC Prometheus Exporter
-Exposes [Prometheus] metrics for [CC: Tweaked] and [CC: Restitched]. This provides the following metrics:
+Exposes [Prometheus] metrics for [CC: Tweaked]. This provides the following metrics:
 
  - Total number of computers.
  - Total number of on computers.
@@ -20,15 +20,14 @@ already running this.
    - TPS (rolling average and as a histogram).
 
 ## Usage
-Download the mod from the releases page and drop it into your `mods/` folder. Be careful to pick the correct jar for
-Forge or Fabric!
+Download the mod from the releases page and drop it into your `mods/` folder.
 
 Start your server, metrics are available at <http://127.0.0.1:9226/metrics>. This can be configured with the config
-file, located at `<world_dir>/serverconfig/ccprometheus.toml`.
+file, located at `<server_root>/serverconfig/ccprometheus.toml`.
 
 ## Credits
-The project layout is based on Jared's [MultiLoader Template](https://github.com/jaredlll08/MultiLoader-Template/).
+[SquidDev] for the original mod
 
 [Prometheus]: https://prometheus.io/
 [CC: Tweaked]: https://github.com/cc-tweaked/CC-Tweaked
-[CC: Restitched]: https://github.com/cc-tweaked/cc-restitched
+[SquidDev]: https://github.com/squiddev-cc

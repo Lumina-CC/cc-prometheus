@@ -2,8 +2,8 @@ package cc.tweaked.prometheus;
 
 import io.prometheus.client.CollectorRegistry;
 import net.minecraft.server.MinecraftServer;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 /**
@@ -18,7 +18,7 @@ public record MetricContext(
     CollectorRegistry registry,
     Consumer<Runnable> onTick
 ) {
-    public void onTick(@Nonnull Runnable action) {
+    public void onTick(@NotNull Runnable action) {
         onTick().accept(action);
     }
 }
